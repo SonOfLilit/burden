@@ -1,5 +1,9 @@
 # Django settings for burden project.
 
+import os
+PROJECT_ROOT = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -30,7 +34,16 @@ TIME_ZONE = 'Asia/Jerusalem'
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'he'
 
+_ = lambda s: s
+LANGUAGES = (
+  ('he', _('Hebrew')),
+)
+
 SITE_ID = 1
+
+LOCALE_PATHS = (
+    os.path.join(PROJECT_ROOT, "locale"),
+)
 
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
@@ -90,6 +103,7 @@ TEMPLATE_LOADERS = (
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',

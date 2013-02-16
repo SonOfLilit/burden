@@ -1,3 +1,4 @@
 *.pyc
 *~
 burden.db
+*.mo

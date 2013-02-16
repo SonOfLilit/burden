@@ -50,7 +50,7 @@ class Body(models.Model):
         verbose_name_plural = _('Bodies')
 
     def __unicode__(self):
-        return name
+        return self.name
 
 
 class Organization(Body):
