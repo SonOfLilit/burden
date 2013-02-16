@@ -1,0 +1,41 @@
+======
+Burden
+======
+
+Burden is a chore-management application written by Aur Saraf.
+
+
+Structure
+=========
+
+Burden is made of a few apps:
+
+design
+------
+
+Define types of chores and rules for who can perform them.
+
+supply
+------
+
+Define work schedules -- how many of each chore are needed when.
+
+hr
+--
+
+Manage organizations and workers (together known as "bodies") and their traits.
+
+market
+------
+
+Assign and trade chores between bodies.
+
+supermarket
+-----------
+
+UI for workers to trade chores.
+
+resources
+---------
+
+Assign chores to bodies trying to distribute fairly.
