@@ -39,3 +39,14 @@ resources
 ---------
 
 Assign chores to bodies trying to distribute fairly.
+
+
+IT
+==
+
+local_apps
+----------
+
+All these apps are stored in the `local_apps` directory, and we'd like
+to include them like `import hr.models` etc'. So `manage.py` adds the
+`local_apps` directory to `sys.path`.
