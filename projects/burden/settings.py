@@ -137,6 +137,7 @@ INSTALLED_APPS = (
     'south',
 
     'hr',
+    'design',
 )
 
 # A sample logging configuration. The only tangible logging
