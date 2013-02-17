@@ -138,6 +138,7 @@ INSTALLED_APPS = (
 
     'hr',
     'design',
+    'schedule',
 )
 
 # A sample logging configuration. The only tangible logging

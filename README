@@ -15,8 +15,8 @@ design
 
 Define types of chores and rules for who can perform them.
 
-supply
-------
+schedule
+--------
 
 Define work schedules -- how many of each chore are needed when.
 
