@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-02-18 00:31+0200\n"
+"POT-Creation-Date: 2013-02-18 02:40+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,51 +18,67 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
 
-#: local_apps/design/models.py:18
+#: local_apps/design/models.py:26
 msgid "Chore Type"
 msgstr "סוג מטלה"
 
-#: local_apps/design/models.py:19
+#: local_apps/design/models.py:27
 msgid "Chore Types"
 msgstr "סוגי מטלות"
 
-#: local_apps/hr/models.py:28
+#: local_apps/hr/models.py:33
 msgid "Trait"
 msgstr "תכונה"
 
-#: local_apps/hr/models.py:29
+#: local_apps/hr/models.py:34
 msgid "Traits"
 msgstr "תכונות"
 
-#: local_apps/hr/models.py:40
+#: local_apps/hr/models.py:49
 msgid "Body"
 msgstr "גוף"
 
-#: local_apps/hr/models.py:41
+#: local_apps/hr/models.py:50
 msgid "Bodies"
 msgstr "גופים"
 
-#: local_apps/hr/models.py:51
+#: local_apps/hr/models.py:64
 msgid "Organization"
 msgstr "ארגון"
 
-#: local_apps/hr/models.py:52
+#: local_apps/hr/models.py:65
 msgid "Organizations"
 msgstr "ארגונים"
 
-#: local_apps/hr/models.py:60
+#: local_apps/hr/models.py:78
 msgid "Worker"
 msgstr "עובד"
 
-#: local_apps/hr/models.py:61
+#: local_apps/hr/models.py:79
 msgid "Workers"
 msgstr "עובדים"
 
-#: local_apps/schedule/models.py:34
+#: local_apps/market/models.py:19
+msgid "Allocation"
+msgstr "הקצאה"
+
+#: local_apps/market/models.py:20
+msgid "Allocations"
+msgstr "הקצאות"
+
+#: local_apps/market/models.py:73
+msgid "Assignment"
+msgstr "השמה"
+
+#: local_apps/market/models.py:74
+msgid "Assignments"
+msgstr "השמות"
+
+#: local_apps/schedule/models.py:33
 msgid "Schedule Rule"
 msgstr "חוק תזמון"
 
-#: local_apps/schedule/models.py:35
+#: local_apps/schedule/models.py:34
 msgid "Schedule Rules"
 msgstr "חוקי תזמון"
 
