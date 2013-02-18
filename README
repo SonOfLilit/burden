@@ -10,6 +10,11 @@ Structure
 
 Burden is made of a few apps:
 
+hr
+--
+
+Manage organizations and workers (together known as "bodies") and their traits.
+
 design
 ------
 
@@ -19,11 +24,6 @@ schedule
 --------
 
 Define work schedules -- how many of each chore are needed when.
-
-hr
---
-
-Manage organizations and workers (together known as "bodies") and their traits.
 
 market
 ------
