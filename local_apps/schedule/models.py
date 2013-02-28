@@ -25,6 +25,10 @@ class ScheduleRule(models.Model):
       where chores are generated. Currently there is no support for
       chores longer than 14 days)
     """
+    # NOTE: Having business logic that determines intervals based on
+    # days is a bit awkward. Perhaps just have an interval field and
+    # be done with it?
+
     chore = models.ForeignKey(ChoreType)
     quantity = models.IntegerField()
     days = models.IntegerField()

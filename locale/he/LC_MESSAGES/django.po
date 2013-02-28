@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-02-28 13:36+0200\n"
+"POT-Creation-Date: 2013-02-28 16:34+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -74,55 +74,59 @@ msgstr "השמה"
 msgid "Assignments"
 msgstr "השמות"
 
-#: local_apps/schedule/fields.py:14
+#: local_apps/schedule/fields.py:18
 msgid "Sundays"
 msgstr "ימי ראשון"
 
-#: local_apps/schedule/fields.py:15
+#: local_apps/schedule/fields.py:19
 msgid "Mondays"
 msgstr "ימי שני"
 
-#: local_apps/schedule/fields.py:16
+#: local_apps/schedule/fields.py:20
 msgid "Tuesdays"
 msgstr "ימי שלישי"
 
-#: local_apps/schedule/fields.py:17
+#: local_apps/schedule/fields.py:21
 msgid "Wednesdays"
 msgstr "ימי רביעי"
 
-#: local_apps/schedule/fields.py:18
+#: local_apps/schedule/fields.py:22
 msgid "Thursdays"
 msgstr "ימי חמישי"
 
-#: local_apps/schedule/fields.py:19
+#: local_apps/schedule/fields.py:23
 msgid "Fridays"
 msgstr "ימי שישי"
 
-#: local_apps/schedule/fields.py:20
+#: local_apps/schedule/fields.py:24
 msgid "Saturdays"
 msgstr "ימי שבת"
 
-#: local_apps/schedule/fields.py:21
+#: local_apps/schedule/fields.py:25
 msgid "Weekdays"
 msgstr "ימי חול"
 
-#: local_apps/schedule/fields.py:22
+#: local_apps/schedule/fields.py:26
 msgid "All Days"
 msgstr "כל ימי השבוע"
 
-#: local_apps/schedule/models.py:37
+#: local_apps/schedule/models.py:41
 msgid "Schedule Rule"
 msgstr "חוק תזמון"
 
-#: local_apps/schedule/models.py:38
+#: local_apps/schedule/models.py:42
 msgid "Schedule Rules"
 msgstr "חוקי תזמון"
 
-#: local_apps/schedule/models.py:54
+#: local_apps/schedule/models.py:64
 msgid "Rules with no days of week not supported"
 msgstr "חוק שאינו חל באף אחד מימי השבוע אינו נתמך"
 
-#: local_apps/schedule/models.py:65
+#: local_apps/schedule/models.py:71
+msgid "Allocations above 2 weeks not supported"
+msgstr "חוק שאינו חל באף אחד מימי השבוע אינו נתמך"
+
+#: local_apps/schedule/models.py:82
 #, python-format
 msgid "Negative quantity of %(chore)s at %(date)s"
 msgstr "כמות שלילית של %(chore)s ב%(date)s"

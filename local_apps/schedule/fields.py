@@ -1,14 +1,18 @@
 from dateutil.rrule import rrule, weekday
 
+from django.core import exceptions, validators
 from django.db import models
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 from south.modelsinspector import add_introspection_rules
 
 
-class DaysOfWeekField(models.IntegerField):
+class DaysOfWeekField(models.Field):
+    """
+    A set of days of week (as `dateutil.rrule.weekday`s)
+    """
+    description = "A set of days of week"
 
-    description = "A set of days of week (as numbers between 1 for Sunday and 7 for Saturday)"
 
     CHOICES = (
         (str(0b01000000), _('Sundays')),
@@ -33,8 +37,13 @@ class DaysOfWeekField(models.IntegerField):
         Converts value assigned or read from database into correct
         format: set of day numbers.
         """
+        if value is None or value == "":
+            return None
+
         if isinstance(value, basestring):
             value = int(value)
+            # and then process as usual
+
         if isinstance(value, int):
             # value is a mask of days
             if not 0 <= value <= 0b01111111:
@@ -65,11 +74,26 @@ class DaysOfWeekField(models.IntegerField):
             mask |= 1 << day.weekday
         return mask
 
+    def validate(self, value, model_instance):
+        """
+        Validates value and throws ValidationError.
+        """
+        # we override this because the default tries to validate the
+        # set() object against self.choices and fails
+
+        if not self.editable:
+            # Skip validation for non-editable fields.
+            return
+
+        if value is None and not self.null:
+            raise exceptions.ValidationError(self.error_messages['null'])
+
+        if not self.blank and value in validators.EMPTY_VALUES:
+            raise exceptions.ValidationError(self.error_messages['blank'])
+
     def formfield(self, **kwargs):
         defaults = {
-            "form_class": forms.TypedChoiceField,
-            "coerce": lambda s: self.get_prep_value(int(s, 2)),
-            "empty": None
+            "form_class": forms.ChoiceField,
             }
         defaults.update(kwargs)
         return super(DaysOfWeekField, self).formfield(**defaults)
