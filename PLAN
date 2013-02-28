@@ -1,0 +1,35 @@
+* hr
+** DONE models
+** TODO admin
+** TODO hooks for integration with external HR database
+** TODO calculate potential
+
+* design
+** DONE models
+** TODO admin
+*** TODO integrate schedule
+**** TODO editing
+**** TODO action for allocations()
+
+* schedule
+** DONE models
+** allocations()
+*** DONE structure
+*** TODO move to manager
+
+* market
+** models
+*** DONE structure
+*** TODO logic
+*** TODO DeactivableModel
+** TODO views
+
+* supermarket
+** TODO models
+
+* resources
+** TODO models
+
+* cross-cutting
+** TODO year
+** TODO permissions
