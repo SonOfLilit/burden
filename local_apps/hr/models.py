@@ -72,7 +72,7 @@ class Worker(Body):
     them himself.
     """
     user = models.OneToOneField(User)
-    traits = models.ManyToManyField(Trait)
+    traits = models.ManyToManyField(Trait, blank=True)
 
     class Meta:
         verbose_name = _('Worker')
