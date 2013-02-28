@@ -43,21 +43,34 @@ class ScheduleRule(models.Model):
 
     @classmethod
     def allocations(cls, chore):
+        """
+        Generates a ChoreType's allocations.
+
+        TODO: Support "year" in which to generate allocations.
+        """
         rules = ScheduleRule.objects.filter(chore=chore)
         # dictionary from (date, days) to quantity
         allocation_plan = {}
         for rule in rules:
 
             # rrule() treats empty sequences as if they were not there
-            # and uses the default which is all days of week
+            # and uses the default which is all days of week. We can't
+            # have that
             if len(rule.days_of_week) == 0:
                 raise ValueError(_('Rules with no days of week not supported'))
 
-            for date in rrule(WEEKLY, dtstart=rule.start_date, until=rule.end_date, byweekday=rule.days_of_week):
+            if 0 < rule.days <= 7:
+                interval = 1
+            elif 7 < rule.days <= 14:
+                interval = 2
+            else:
+                raise ValueError(_('Allocations above 2 weeks not supported'))
+
+            for date in rrule(WEEKLY, dtstart=rule.start_date, until=rule.end_date,
+                              byweekday=rule.days_of_week, interval=interval):
                 # datetime object to date object
                 date = date.date()
-                days = rule.days
-                allocation_plan[date, days] = allocation_plan.get((date, days), 0) + rule.quantity
+                allocation_plan[date, rule.days] = allocation_plan.get((date, rule.days), 0) + rule.quantity
 
         allocations = []
         for (date, days), quantity in allocation_plan.iteritems():

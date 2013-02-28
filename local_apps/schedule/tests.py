@@ -83,13 +83,18 @@ class ScheduleTest(TestCase):
         allocations = self.get_allocations()
         self.assertEqual(2, len(allocations))
 
-    @unittest.skip("TODO")
-    def test_biweekly_rule(self):
-        pass
 
-    @unittest.skip("TODO")
+    def test_biweekly_rule(self):
+        self.rule(days=8, days_of_week=[TU], end_date=self.DATE + relativedelta(weeks=+4, days=-1))
+        allocations = self.get_allocations()
+        self.assertEqual(2, len(allocations))
+        dates = sorted(x.date for x in allocations)
+        # 2001 starts on a monday
+        self.assertEqual([datetime.date(2001, 1, 2), datetime.date(2001, 1, 2 + 14)], dates)
+        
     def test_triweekly_rule_not_supported(self):
-        pass
+        self.rule(days=15)
+        self.assertRaises(ValueError, self.get_allocations)
 
 
     def test_multiple_rules(self):
