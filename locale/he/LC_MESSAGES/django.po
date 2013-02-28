@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-02-18 02:40+0200\n"
+"POT-Creation-Date: 2013-02-28 13:36+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -74,13 +74,58 @@ msgstr "השמה"
 msgid "Assignments"
 msgstr "השמות"
 
-#: local_apps/schedule/models.py:33
+#: local_apps/schedule/fields.py:14
+msgid "Sundays"
+msgstr "ימי ראשון"
+
+#: local_apps/schedule/fields.py:15
+msgid "Mondays"
+msgstr "ימי שני"
+
+#: local_apps/schedule/fields.py:16
+msgid "Tuesdays"
+msgstr "ימי שלישי"
+
+#: local_apps/schedule/fields.py:17
+msgid "Wednesdays"
+msgstr "ימי רביעי"
+
+#: local_apps/schedule/fields.py:18
+msgid "Thursdays"
+msgstr "ימי חמישי"
+
+#: local_apps/schedule/fields.py:19
+msgid "Fridays"
+msgstr "ימי שישי"
+
+#: local_apps/schedule/fields.py:20
+msgid "Saturdays"
+msgstr "ימי שבת"
+
+#: local_apps/schedule/fields.py:21
+msgid "Weekdays"
+msgstr "ימי חול"
+
+#: local_apps/schedule/fields.py:22
+msgid "All Days"
+msgstr "כל ימי השבוע"
+
+#: local_apps/schedule/models.py:37
 msgid "Schedule Rule"
 msgstr "חוק תזמון"
 
-#: local_apps/schedule/models.py:34
+#: local_apps/schedule/models.py:38
 msgid "Schedule Rules"
 msgstr "חוקי תזמון"
+
+#: local_apps/schedule/models.py:54
+msgid "Rules with no days of week not supported"
+msgstr "חוק שאינו חל באף אחד מימי השבוע אינו נתמך"
+
+#: local_apps/schedule/models.py:65
+#, python-format
+msgid "Negative quantity of %(chore)s at %(date)s"
+msgstr "כמות שלילית של %(chore)s ב%(date)s"
 
 #: projects/burden/settings.py:39
 msgid "Hebrew"
