@@ -1,8 +1,9 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from market.models import Allocation
 from design.models import ChoreType
-
+from schedule.fields import DaysOfWeekField
 
 class ScheduleRule(models.Model):
     """
@@ -25,6 +26,7 @@ class ScheduleRule(models.Model):
     chore = models.ForeignKey(ChoreType)
     quantity = models.IntegerField()
     days = models.IntegerField()
+    days_of_week = DaysOfWeekField()
     start_date = models.DateField()
     end_date = models.DateField()
     # TODO: function that generates allocations (probably in manager)
@@ -36,3 +38,12 @@ class ScheduleRule(models.Model):
     def __unicode__(self):
         return u"%d X %d days of %s [%s - %s]" % (
             self.quantity, self.days, self.chore, self.start_date, self.end_date)
+
+    @classmethod
+    def allocations(cls, chore):
+        rules = ScheduleRule.objects.filter(chore=chore)
+        allocations = []
+        for rule in rules:
+            allocation = Allocation(chore=chore, date=rule.start_date, days=1)
+            allocations.append(allocation)
+        return allocations

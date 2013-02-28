@@ -1,0 +1,48 @@
+[
+    {
+        "pk": 1, 
+        "model": "hr.body", 
+        "fields": {
+            "name": "Root", 
+            "parent": null
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "hr.body", 
+        "fields": {
+            "name": "Sub", 
+            "parent": 1
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "hr.body", 
+        "fields": {
+            "name": "Worker", 
+            "parent": 2
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "hr.organization", 
+        "fields": {
+            "managers": 1
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "hr.organization", 
+        "fields": {
+            "managers": 2
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "hr.worker", 
+        "fields": {
+            "traits": [], 
+            "user": 2
+        }
+    }
+]
