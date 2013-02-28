@@ -1,3 +1,5 @@
+from dateutil.rrule import rrule, weekday
+
 from django.db import models
 from django import forms
 from django.utils.translation import ugettext_lazy as _
@@ -9,14 +11,15 @@ class DaysOfWeekField(models.IntegerField):
     description = "A set of days of week (as numbers between 1 for Sunday and 7 for Saturday)"
 
     CHOICES = (
-        (str(0b1000000), _('Sundays')),
-        (str(0b0100000), _('Mondays')),
-        (str(0b0010000), _('Tuesdays')),
-        (str(0b0001000), _('Wednesdays')),
-        (str(0b0000100), _('Thursdays')),
-        (str(0b0000010), _('Fridays')),
-        (str(0b0000001), _('Saturdays')),
-        (str(0b1111100), _('Weekdays')),
+        (str(0b01000000), _('Sundays')),
+        (str(0b00000001), _('Mondays')),
+        (str(0b00000010), _('Tuesdays')),
+        (str(0b00000100), _('Wednesdays')),
+        (str(0b00001000), _('Thursdays')),
+        (str(0b00010000), _('Fridays')),
+        (str(0b00100000), _('Saturdays')),
+        (str(0b01001111), _('Weekdays')),
+        (str(0b01111111), _('All Days')),
         )
 
     __metaclass__ = models.SubfieldBase
@@ -39,12 +42,14 @@ class DaysOfWeekField(models.IntegerField):
             days = set()
             for i in xrange(7):
                 if value & (1 << i):
-                    days.add(i + 1)
+                    days.add(weekday(i))
         else:
             days = set(value)
 
-        if days and (min(days) < 1 or max(days) > 7):
-            raise ValueError("Invalid days: " + repr(days))
+        if any(not isinstance(x, weekday) for x in days):
+            raise ValueError("Days should be weekday objects: " + repr(days))
+        if len(set(day.weekday for day in days)) != len(days):
+            raise ValueError("Duplicate days: " + repr(days))
         return days
 
     def get_prep_value(self, days):
@@ -57,9 +62,7 @@ class DaysOfWeekField(models.IntegerField):
         days = self.to_python(days)
         mask = 0
         for day in days:
-            if not 1 <= day <= 7:
-                raise ValueError(repr(day))
-            mask |= 1 << (day - 1)
+            mask |= 1 << day.weekday
         return mask
 
     def formfield(self, **kwargs):

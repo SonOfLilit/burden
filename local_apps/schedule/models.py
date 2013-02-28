@@ -1,3 +1,5 @@
+from dateutil.rrule import *
+
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -44,6 +46,16 @@ class ScheduleRule(models.Model):
         rules = ScheduleRule.objects.filter(chore=chore)
         allocations = []
         for rule in rules:
-            allocation = Allocation(chore=chore, date=rule.start_date, days=1)
-            allocations.append(allocation)
+
+            # rrule() treats empty sequences as if they were not there
+            # and uses the default which is all days of week
+            if len(rule.days_of_week) == 0:
+                raise ValueError(_('Rules with no days of week not supported'))
+
+            for date in rrule(WEEKLY, dtstart=rule.start_date, until=rule.end_date, byweekday=rule.days_of_week):
+                # datetime object to date object
+                date = date.date()
+                for _i in xrange(rule.quantity):
+                    allocation = Allocation(chore=chore, date=date, days=rule.days)
+                    allocations.append(allocation)
         return allocations
