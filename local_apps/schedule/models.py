@@ -44,7 +44,8 @@ class ScheduleRule(models.Model):
     @classmethod
     def allocations(cls, chore):
         rules = ScheduleRule.objects.filter(chore=chore)
-        allocations = []
+        # dictionary from (date, days) to quantity
+        allocation_plan = {}
         for rule in rules:
 
             # rrule() treats empty sequences as if they were not there
@@ -55,7 +56,14 @@ class ScheduleRule(models.Model):
             for date in rrule(WEEKLY, dtstart=rule.start_date, until=rule.end_date, byweekday=rule.days_of_week):
                 # datetime object to date object
                 date = date.date()
-                for _i in xrange(rule.quantity):
+                days = rule.days
+                allocation_plan[date, days] = allocation_plan.get((date, days), 0) + rule.quantity
+
+        allocations = []
+        for (date, days), quantity in allocation_plan.iteritems():
+            if quantity < 0:
+                raise ValueError(_('Negative quantity of %(chore)s at %(date)s') % locals())
+            for _i in xrange(quantity):
                     allocation = Allocation(chore=chore, date=date, days=rule.days)
                     allocations.append(allocation)
         return allocations

@@ -28,12 +28,15 @@ class ScheduleTest(TestCase):
         params.update(kwargs)
         return ScheduleRule.objects.create(**params)
 
-    def test_one_shot(self):
+    def get_allocations(self):
+        return ScheduleRule.allocations(self.chore)
+
+    def test_one_allocation(self):
         days = 6
-        rule = self.rule(days=days)
+        self.rule(days=days)
 
         # TODO: Move to manager
-        allocations = ScheduleRule.allocations(self.chore)
+        allocations = self.get_allocations()
         self.assertEqual(1, len(allocations))
         self.assertEqual(self.chore, allocations[0].chore)
         self.assertEqual(self.DATE, allocations[0].date)
@@ -41,49 +44,74 @@ class ScheduleTest(TestCase):
 
     def test_quantity(self):
         quantity = 3
-        rule = self.rule(quantity=quantity)
+        self.rule(quantity=quantity)
 
-        allocations = ScheduleRule.allocations(self.chore)
+        allocations = self.get_allocations()
         self.assertEqual(quantity, len(allocations))
         for allocation in allocations:
             self.assertEqual(self.DATE, allocation.date)
 
     def test_date_range(self): 
-        rule = self.rule(end_date=self.DATE + relativedelta(days=+1))
-        allocations = ScheduleRule.allocations(self.chore)
+        self.rule(end_date=self.DATE + relativedelta(days=+1))
+        allocations = self.get_allocations()
         self.assertEqual(2, len(allocations))
         self.assertNotEqual(allocations[0].date, allocations[1].date)
 
     def test_big_date_range(self): 
-        rule = self.rule(end_date=self.DATE + relativedelta(years=+1, days=-1))
-        allocations = ScheduleRule.allocations(self.chore)
+        self.rule(end_date=self.DATE + relativedelta(years=+1, days=-1))
+        allocations = self.get_allocations()
         self.assertEqual(365, len(allocations))
 
     def test_leap_year_date_range(self): 
         # 2000 was a leap year
         date = datetime.date(2000, 1, 1)
-        rule = self.rule(start_date=date, end_date=date + relativedelta(years=+1, days=-1))
-        allocations = ScheduleRule.allocations(self.chore)
+        self.rule(start_date=date, end_date=date + relativedelta(years=+1, days=-1))
+        allocations = self.get_allocations()
         self.assertEqual(366, len(allocations))
 
+    def test_negative_date_range(self): 
+        self.rule(end_date=self.DATE + relativedelta(days=-1))
+        allocations = self.get_allocations()
+        self.assertEqual(0, len(allocations))
+
     def test_days_of_week_none(self):
-        rule = self.rule(days_of_week=[])
-        try:
-            allocations = ScheduleRule.allocations(self.chore)
-            assert False
-        except ValueError:
-            pass
+        self.rule(days_of_week=[])
+        self.assertRaises(ValueError, self.get_allocations)
 
     def test_days_of_week_some(self):
-        rule = self.rule(days_of_week=[SU, TU], end_date=self.DATE + relativedelta(weeks=+1, days=-1))
-        allocations = ScheduleRule.allocations(self.chore)
+        self.rule(days_of_week=[SU, TU], end_date=self.DATE + relativedelta(weeks=+1, days=-1))
+        allocations = self.get_allocations()
         self.assertEqual(2, len(allocations))
 
+    @unittest.skip("TODO")
+    def test_biweekly_rule(self):
+        pass
 
     @unittest.skip("TODO")
+    def test_triweekly_rule_not_supported(self):
+        pass
+
+
     def test_multiple_rules(self):
-        pass
+        self.rule()
+        self.rule()
+        allocations = self.get_allocations()
+        self.assertEqual(2, len(allocations))
 
-    @unittest.skip("TODO")
     def test_negative_quantity(self):
-        pass
+        self.rule()
+        self.rule(quantity=-1)
+        allocations = self.get_allocations()
+        self.assertEqual(0, len(allocations))
+
+    def test_negative_quantity_rule_still_created(self):
+        self.rule()
+        self.rule()
+        self.rule(quantity=-1)
+        allocations = self.get_allocations()
+        self.assertEqual(1, len(allocations))
+
+    def test_negative_total_quantity(self):
+        self.rule()
+        self.rule(quantity=-2)
+        self.assertRaises(ValueError, self.get_allocations)
