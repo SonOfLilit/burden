@@ -32,7 +32,7 @@ class ScheduleTest(TestCase):
         return ScheduleRule.objects.create(**params)
 
     def get_allocations(self):
-        raw_allocations = ScheduleRule.allocations(self.chore)
+        raw_allocations = ScheduleRule.calculate_allocations(self.chore)
         allocations = []
         for (date, days), quantity in raw_allocations.iteritems():
             if quantity < 0:
@@ -50,6 +50,10 @@ class ScheduleTest(TestCase):
         self.assertEqual(1, len(allocations))
         self.assertEqual(self.DATE, allocations[0].date)
         self.assertEqual(days, allocations[0].days)
+
+    def test_no_rules(self):
+        allocations = self.get_allocations()
+        self.assertEqual(0, len(allocations))
 
     def test_quantity(self):
         quantity = 3

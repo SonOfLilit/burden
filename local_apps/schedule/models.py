@@ -35,8 +35,8 @@ class ScheduleRule(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
     # TODO: rules_revision = models.ForeignKey(ScheduleRulesRevision, blank=True)
-    # TODO: test that only revisionless rules are used by allocations()
-    # TODO: save_rules_revision(), make allocations() action call it
+    # TODO: test that only revisionless rules are used by calculate_allocations()
+    # TODO: save_rules_revision(), make calculate_allocations() action call it
     # TODO: Prevent editing of rules with rules_revision
 
 
@@ -50,7 +50,7 @@ class ScheduleRule(models.Model):
 
     # TODO: move to manager?
     @classmethod
-    def allocations(cls, chore):
+    def calculate_allocations(cls, chore):
         """
         Generates a ChoreType's allocations.
 
