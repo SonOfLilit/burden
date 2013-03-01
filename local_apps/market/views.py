@@ -1,11 +1,12 @@
 from django.shortcuts import get_object_or_404, redirect, render
-from django.http import HttpResponse
+from django.db import transaction
 
 from design.models import ChoreType
 from schedule.models import ScheduleRule
 from market.models import Allocation
 
 
+@transaction.commit_on_success
 def update_allocations(request):
     """
     Generates allocations for `ChoreType` and commits them.
