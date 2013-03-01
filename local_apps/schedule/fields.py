@@ -30,7 +30,7 @@ class DaysOfWeekField(models.Field):
 
     def __init__(self, *args, **kwargs):
         kwargs["choices"] = self.CHOICES
-        super(DaysOfWeekField, self).__init__(self, *args, **kwargs)
+        super(DaysOfWeekField, self).__init__(*args, **kwargs)
 
     def to_python(self, value):
         """
