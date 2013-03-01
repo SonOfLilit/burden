@@ -10,9 +10,10 @@
 *** TODO integrate schedule
 **** DONE editing
 **** TODO visualization
-**** action for allocations()
+**** action for calculate_allocations()
 ***** DONE new
 ***** TODO update
+***** TODO multiple
 
 * schedule
 ** DONE models
