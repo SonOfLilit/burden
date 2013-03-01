@@ -3,7 +3,6 @@ from dateutil.rrule import *
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from market.models import Allocation
 from design.models import ChoreType
 from schedule.fields import DaysOfWeekField
 
@@ -50,11 +49,13 @@ class ScheduleRule(models.Model):
         """
         Generates a ChoreType's allocations.
 
+        Returns a dict from (date, days) to quantity.
+
         TODO: Support "year" in which to generate allocations.
         """
         rules = ScheduleRule.objects.filter(chore=chore)
         # dictionary from (date, days) to quantity
-        allocation_plan = {}
+        allocations = {}
         for rule in rules:
 
             # rrule() treats empty sequences as if they were not there
@@ -74,13 +75,9 @@ class ScheduleRule(models.Model):
                               byweekday=rule.days_of_week, interval=interval):
                 # datetime object to date object
                 date = date.date()
-                allocation_plan[date, rule.days] = allocation_plan.get((date, rule.days), 0) + rule.quantity
+                allocations[date, rule.days] = allocations.get((date, rule.days), 0) + rule.quantity
 
-        allocations = []
-        for (date, days), quantity in allocation_plan.iteritems():
+        for (date, days), quantity in allocations.iteritems():
             if quantity < 0:
                 raise ValueError(_('Negative quantity of %(chore)s at %(date)s') % locals())
-            for _i in xrange(quantity):
-                    allocation = Allocation(chore=chore, date=date, days=rule.days)
-                    allocations.append(allocation)
         return allocations

@@ -2,10 +2,13 @@ from django.utils import unittest
 from django.test import TestCase
 import datetime
 import dateutil.rrule
+from collections import namedtuple
 from dateutil.rrule import SU, TU
 from dateutil.relativedelta import relativedelta
 from schedule.models import ScheduleRule, ChoreType
 
+
+Alloc = namedtuple("Alloc", ["chore", "days", "date"])
 
 class ScheduleTest(TestCase):
     fixtures = ["design"]
@@ -29,7 +32,14 @@ class ScheduleTest(TestCase):
         return ScheduleRule.objects.create(**params)
 
     def get_allocations(self):
-        return ScheduleRule.allocations(self.chore)
+        raw_allocations = ScheduleRule.allocations(self.chore)
+        allocations = []
+        for (date, days), quantity in raw_allocations.iteritems():
+            if quantity < 0:
+                self.fail("negative quantity: " + str(quantity))
+            for _i in xrange(quantity):
+                allocations.append(Alloc(chore=self.chore, date=date, days=days))
+        return allocations
 
     def test_one_allocation(self):
         days = 6
@@ -38,7 +48,6 @@ class ScheduleTest(TestCase):
         # TODO: Move to manager
         allocations = self.get_allocations()
         self.assertEqual(1, len(allocations))
-        self.assertEqual(self.chore, allocations[0].chore)
         self.assertEqual(self.DATE, allocations[0].date)
         self.assertEqual(days, allocations[0].days)
 
