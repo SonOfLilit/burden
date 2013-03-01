@@ -8,13 +8,14 @@
 ** DONE models
 ** TODO admin
 *** TODO integrate schedule
-**** TODO editing
+**** DONE editing
+**** TODO visualization
 **** TODO action for allocations()
 
 * schedule
 ** DONE models
 ** allocations()
-*** DONE structure
+*** DONE implementation
 *** TODO move to manager
 
 * market
@@ -22,7 +23,9 @@
 *** DONE structure
 *** TODO logic
 *** TODO DeactivableModel
-** TODO views
+** views
+*** TODO allocate to suborganizations
+*** TODO allocate to users
 
 * supermarket
 ** TODO models

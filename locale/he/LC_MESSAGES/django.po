@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-02-28 16:34+0200\n"
+"POT-Creation-Date: 2013-03-01 03:09+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,14 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
+
+#: local_apps/design/admin.py:17
+msgid "Traits Required"
+msgstr "תכונות נדרשות"
+
+#: local_apps/design/admin.py:21
+msgid "Traits Forbidden"
+msgstr "תכונות פוטרות"
 
 #: local_apps/design/models.py:26
 msgid "Chore Type"
