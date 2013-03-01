@@ -34,7 +34,11 @@ class ScheduleRule(models.Model):
     days_of_week = DaysOfWeekField()
     start_date = models.DateField()
     end_date = models.DateField()
-    # TODO: function that generates allocations (probably in manager)
+    # TODO: rules_revision = models.ForeignKey(ScheduleRulesRevision, blank=True)
+    # TODO: test that only revisionless rules are used by allocations()
+    # TODO: save_rules_revision(), make allocations() action call it
+    # TODO: Prevent editing of rules with rules_revision
+
 
     class Meta:
         verbose_name = _('Schedule Rule')
@@ -44,6 +48,7 @@ class ScheduleRule(models.Model):
         return u"%d X %d days of %s [%s - %s]" % (
             self.quantity, self.days, self.chore, self.start_date, self.end_date)
 
+    # TODO: move to manager?
     @classmethod
     def allocations(cls, chore):
         """

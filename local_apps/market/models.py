@@ -14,6 +14,7 @@ class Allocation(models.Model):
     date = models.DateField()
     days = models.IntegerField()
     # TODO: DeactivableModel (see below)
+    # TODO: current_performer, assignment_chain, can_take, take, assign, trade
 
     class Meta:
         verbose_name = _("Allocation")
@@ -34,8 +35,8 @@ class Assignment(models.Model):
 
     When a `Body` is the current performer of an `Allocation`
     (i.e. there are more active `Assignment`s of the `Allocation` to
-    the `Body` than from the `Body`), it may assign or trade it to any
-    other `Body`.
+    the `Body` than from the `Body`), it may assign it to a child or
+    trade it to any other `Body`.
 
     If there is a direct path of `Assignment`s of an `Allocation` from
     a `Body` to its current performer (always from parent to child,
