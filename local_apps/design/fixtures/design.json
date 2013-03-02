@@ -1,11 +1,21 @@
 [
     {
-        "pk": 1, 
-        "model": "design.choretype", 
+        "pk": 1,
+        "model": "design.choretype",
         "fields": {
-            "owners": 1, 
-            "traits_forbidden": [], 
-            "name": "Waste Time", 
+            "owners": 1,
+            "traits_forbidden": [],
+            "name": "Waste Time",
+            "traits_required": []
+        }
+    },
+    {
+        "pk": 2,
+        "model": "design.choretype",
+        "fields": {
+            "owners": 1,
+            "traits_forbidden": [],
+            "name": "Waste More Time",
             "traits_required": []
         }
     }

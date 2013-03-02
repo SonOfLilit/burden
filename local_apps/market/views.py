@@ -1,12 +1,15 @@
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import redirect, render
+from django.http import Http404
 from django.db import transaction
+from django.utils.translation import ugettext_lazy as _
+from django.contrib import messages
 
 from design.models import ChoreType
 from schedule.models import ScheduleRule
 from market.models import Allocation
+from market.forms import UpdateAllocationsForm
 
 
-@transaction.commit_on_success
 def update_allocations(request):
     """
     Generates allocations for `ChoreType` and commits them.
@@ -16,20 +19,34 @@ def update_allocations(request):
     # TODO: permissions (either check membership in chore owners
     # directly or check permission to edit schedule)
 
-    chore = get_object_or_404(ChoreType, pk=request.POST["chore"])
+    form = UpdateAllocationsForm(request.POST)
+    if form.is_valid():
 
+        chores = form.cleaned_data["chores"]
+
+        for chore in chores:
+            try:
+                update_chore_allocations(chore)
+                messages.success(request, _('Allocations for %s updated') % chore)
+            except Exception, e:
+                messages.error(request, _('Allocation update for %s failed: %s') % (chore, e))
+
+    else:
+        messages.error(request, _('Errors in parameters: %s') % form.errors)
+
+    return redirect_back(request)
+
+@transaction.commit_on_success
+def update_chore_allocations(chore):
     # TODO: Handle this case
     if chore.allocation_set.count() > 0:
         raise ValueError("Updating allocations not yet supported, only creating from scratch")
 
     allocation_plan = ScheduleRule.calculate_allocations(chore)
-
     for (date, days), quantity in allocation_plan.iteritems():
         assert quantity >= 0
         for _i in xrange(quantity):
             Allocation.objects.create(chore=chore, date=date, days=days)
-
-    return redirect_back(request)
 
 
 def redirect_back(request):
