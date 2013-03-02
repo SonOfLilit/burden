@@ -1,10 +1,3 @@
-"""
-This file demonstrates writing tests using the unittest module. These will pass
-when you run "manage.py test".
-
-Replace this with more appropriate tests for your application.
-"""
-
 from django.test import TestCase, TransactionTestCase
 import mock
 
@@ -13,7 +6,6 @@ import dateutil.rrule
 from design.models import ChoreType
 from schedule.models import ScheduleRule
 import market.actions
-import market.views
 
 
 class UpdateAllocationsTests(TestCase):

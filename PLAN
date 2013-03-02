@@ -28,7 +28,7 @@
 ** models
 *** DONE structure
 *** TODO logic
-*** TODO DeactivableModel
+*** DONE DeactivableModel
 ** views
 *** TODO allocate to suborganizations
 *** TODO allocate to users
