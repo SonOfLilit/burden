@@ -1,7 +1,9 @@
 from django.utils.translation import ugettext_lazy as _
 from django.contrib import admin
+
 from design.models import ChoreType
 from schedule.models import ScheduleRule
+import market.actions
 
 
 class ScheduleRuleInline(admin.TabularInline):
@@ -11,6 +13,7 @@ class ScheduleRuleInline(admin.TabularInline):
 class ChoreTypeAdmin(admin.ModelAdmin):
     list_display = ("name", "owners", "traits_required_string", "traits_forbidden_string")
     inlines = [ScheduleRuleInline]
+    actions = [market.actions.update_allocations]
 
     def traits_required_string(self, chore):
         return u", ".join([trait.name for trait in chore.traits_required.all()])

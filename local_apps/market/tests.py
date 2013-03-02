@@ -15,6 +15,7 @@ import dateutil.rrule
 from design.models import ChoreType
 from schedule.models import ScheduleRule
 from market.models import Allocation
+import market.actions
 import market.views
 
 
@@ -42,9 +43,9 @@ class UpdateAllocationsTests(TestCase):
     DATE = datetime.date(2001, 1, 1)
 
     def setUp(self):
-        self.client = Client()
         self.chore = ChoreType.objects.get(name="Waste Time")
         self.other_chore = ChoreType.objects.get(name="Waste More Time")
+        self.modeladmin = mock.Mock()
 
     def rule(self, **kwargs):
         # code copied from schedule tests, for so little code it seems
@@ -60,35 +61,39 @@ class UpdateAllocationsTests(TestCase):
         params.update(kwargs)
         return ScheduleRule.objects.create(**params)
 
-    def post_update_allocations(self, chores=None):
-        chores = chores or [self.chore.pk]
-        return self.client.post("/market/update_allocations/", {"chores": chores})
+    def update_allocations(self, chores=None):
+        chores = chores or ChoreType.objects.filter(pk=self.chore.pk)
+        request = mock.Mock()
+        market.actions.update_allocations(self.modeladmin, request, chores)
+
+    def assert_only_message(self, text):
+        self.assert_messages([text])
+
+    def assert_messages(self, expected):
+        messages = []
+        for _a, (_mock, message), _dict in self.modeladmin.message_user.mock_calls:
+            messages.append(message)
+        self.assertEqual(len(expected), len(messages))
+        for text, message in zip(expected, messages):
+            self.assertIn(text, message)
+
 
     def test_first_time(self):
         self.rule()
-        response = self.post_update_allocations()
-        self.assertEqual(200, response.status_code)
+        self.update_allocations()
+        self.assert_only_message("updated")
         self.assertEqual(1, self.chore.allocation_set.count())
-        self.assertIn("market/redirect_back.html", (t.name for t in response.templates))
-        message, = (m.message for m in response.context["messages"])
-        self.assertIn("updated", message)
-
-
-    def test_illegal_chore(self):
-        response = self.post_update_allocations(chores=[12345])
-        message, = (m.message for m in response.context["messages"])
-        self.assertIn("Errors in parameters:", message)
 
     def test_no_rules(self):
-        response = self.post_update_allocations()
-        self.assertEqual(200, response.status_code)
+        self.update_allocations()
+        self.assert_only_message("updated")
         self.assertEqual(0, self.chore.allocation_set.count())
 
     def test_multiple_chores(self):
         self.rule()
         self.rule(chore=self.other_chore)
-        response = self.post_update_allocations(chores=[self.chore.pk, self.other_chore.pk])
-        self.assertEqual(200, response.status_code)
+        self.update_allocations(chores=[self.chore, self.other_chore])
+        self.assert_messages(["updated", "updated"])
         self.assertEqual(1, self.chore.allocation_set.count())
         self.assertEqual(1, self.other_chore.allocation_set.count())
 
@@ -96,21 +101,23 @@ class UpdateAllocationsTests(TestCase):
 # warning: complicated tests ahead, read slowly and carefully
 class UpdateAllocationsTransactionTest(TransactionTestCase):
 
-    fixtures = ["design"]
-
-    DATE = datetime.date(2001, 1, 1)
-
-    def setUp(self):
-        self.client = Client()
-        self.chore = ChoreType.objects.get(name="Waste Time")
-        self.other_chore = ChoreType.objects.get(name="Waste More Time")
+    # the only reason this is not the same class is that we can't
+    # inherit TestCase, so lets do something ugly to get the
+    # attributes we want here too. __dict__ is because of
+    # unbound/bound method magic.
+    fixtures = UpdateAllocationsTests.__dict__["fixtures"]
+    DATE = UpdateAllocationsTests.__dict__["DATE"]
+    setUp = UpdateAllocationsTests.__dict__["setUp"]
+    update_allocations = UpdateAllocationsTests.__dict__["update_allocations"]
+    assert_messages = UpdateAllocationsTests.__dict__["assert_messages"]
 
     @mock.patch("schedule.models.ScheduleRule.calculate_allocations")
     def test_nothing_commited_on_error(self, calculate_allocations):
         # first, we mock calculate_allocations() to return a sequence
         # that will have a legal value and then an illegal one
-        mock_dict, legal, illegal = self.mock_dict([((self.DATE, 3), 1), ((self.DATE, 3), -1)])
-        calculate_allocations.return_value = mock_dict
+        mock_allocation_plan, legal, illegal = self.mock_allocation_plan(
+            [((self.DATE, 3), 1), ((self.DATE, 3), -1)])
+        calculate_allocations.return_value = mock_allocation_plan
 
         # since this test is implementation-based, lets make sure the
         # implementation acts as we assume: iterates over the results
@@ -121,7 +128,7 @@ class UpdateAllocationsTransactionTest(TransactionTestCase):
         # doesn't matter which since our mocked
         # `calculate_allocations` ignores it. It should fail the
         # assertion when it reaches `illegal_allocations`
-        self.client.post("/market/update_allocations/", {"chores": [self.chore.pk]})
+        self.update_allocations()
 
         # to know it reached `legal` /before/ failing the assertion on
         # `illegal_allocations`, lets make sure they were unpacked
@@ -130,23 +137,21 @@ class UpdateAllocationsTransactionTest(TransactionTestCase):
 
         # OK, now lets do the actual test: make sure nothing was commited
         self.assertEqual(0, self.chore.allocation_set.count())
+        self.assert_messages(["failed"])
 
     @mock.patch("schedule.models.ScheduleRule.calculate_allocations")
     def test_other_chores_unaffected_by_error(self, calculate_allocations):
-        mock_dict, _ = self.mock_dict([((self.DATE, 3), -1)])
-        other_mock_dict, _ = self.mock_dict([((self.DATE, 3), 1)])
-        calculate_allocations.side_effect = [mock_dict, other_mock_dict]
-        response = self.client.post("/market/update_allocations/",
-                                    {"chores": [self.chore.pk, self.other_chore.pk]})
+        mock_plan, _ = self.mock_allocation_plan([((self.DATE, 3), -1)])
+        other_mock_plan, _ = self.mock_allocation_plan([((self.DATE, 3), 1)])
+        calculate_allocations.side_effect = [mock_plan, other_mock_plan]
+        self.update_allocations(chores=[self.chore, self.other_chore])
 
         self.assertEqual(0, self.chore.allocation_set.count())
         self.assertEqual(1, self.other_chore.allocation_set.count())
-        failure_message, success_message = (m.message for m in response.context["messages"])
-        self.assertIn("failed", failure_message)
-        self.assertIn("updated", success_message)
+        self.assert_messages(["failed", "updated"])
 
 
-    def mock_dict(self, pairs):
+    def mock_allocation_plan(self, pairs):
         """
         Helps with mocking `calculate_allocations()`'s return value.
 
@@ -160,9 +165,9 @@ class UpdateAllocationsTransactionTest(TransactionTestCase):
 
         Example:
 
-            >> mock_dict, legal, illegal = self.mock_dict([((self.DATE, 3), 1), ((self.DATE, 3), -1)])
-            >> calculate_allocations.return_value = mock_dict
-            >> self.client.post("/market/update_allocations/", {"chores": [self.chore.pk]})
+            >> mock_plan, legal, illegal = self.mock_allocation_plan([((self.DATE, 3), 1), ((self.DATE, 3), -1)])
+            >> calculate_allocations.return_value = mock_plan
+            >> self.update_allocations()
             >> legal.__iter__.assert_called_with()
             >> illegal.__iter__.assert_called_with()
         """
