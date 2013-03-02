@@ -16,17 +16,6 @@ import market.actions
 import market.views
 
 
-class RedirectBackTests(TestCase):
-
-    def test_referrer(self):
-        referrer = "http://somewhere.over.the.rainbow"
-        request = mock.Mock(META={"HTTP_REFERRER": referrer})
-        response = market.views.redirect_back(request)
-
-        self.assertEqual(302, response.status_code)
-        self.assertEqual(referrer, response["Location"])
-
-
 class UpdateAllocationsTests(TestCase):
 
     fixtures = ["design"]
