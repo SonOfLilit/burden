@@ -17,7 +17,7 @@ class ChoreTypeAdmin(admin.ModelAdmin):
     traits_required_string.short_description = _('Traits Required')
 
     def traits_forbidden_string(self, chore):
-        return ""
+        return u", ".join([trait.name for trait in chore.traits_forbidden.all()])
     traits_forbidden_string.short_description = _('Traits Forbidden')
 
 
