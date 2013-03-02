@@ -11,16 +11,19 @@ class ScheduleRuleInline(admin.TabularInline):
 
 
 class ChoreTypeAdmin(admin.ModelAdmin):
-    list_display = ("name", "owners", "traits_required_string", "traits_forbidden_string")
+    list_display = ("name", "owners", "traits_required_string",
+                    "traits_forbidden_string")
     inlines = [ScheduleRuleInline]
     actions = [market.actions.update_allocations]
 
     def traits_required_string(self, chore):
-        return u", ".join([trait.name for trait in chore.traits_required.all()])
+        return u", ".join([trait.name for trait in
+                           chore.traits_required.all()])
     traits_required_string.short_description = _('Traits Required')
 
     def traits_forbidden_string(self, chore):
-        return u", ".join([trait.name for trait in chore.traits_forbidden.all()])
+        return u", ".join([trait.name for trait in
+                           chore.traits_forbidden.all()])
     traits_forbidden_string.short_description = _('Traits Forbidden')
 
 

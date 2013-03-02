@@ -6,15 +6,12 @@ Replace this with more appropriate tests for your application.
 """
 
 from django.test import TestCase, TransactionTestCase
-from django.utils import unittest
-from django.test.client import Client
 import mock
 
 import datetime
 import dateutil.rrule
 from design.models import ChoreType
 from schedule.models import ScheduleRule
-from market.models import Allocation
 import market.actions
 import market.views
 
@@ -23,12 +20,7 @@ class RedirectBackTests(TestCase):
 
     def test_referrer(self):
         referrer = "http://somewhere.over.the.rainbow"
-
-        class Mock(object): pass
-
-        request = Mock()
-        request.META = {"HTTP_REFERRER": referrer}
-
+        request = mock.Mock(META={"HTTP_REFERRER": referrer})
         response = market.views.redirect_back(request)
 
         self.assertEqual(302, response.status_code)
@@ -46,37 +38,6 @@ class UpdateAllocationsTests(TestCase):
         self.chore = ChoreType.objects.get(name="Waste Time")
         self.other_chore = ChoreType.objects.get(name="Waste More Time")
         self.modeladmin = mock.Mock()
-
-    def rule(self, **kwargs):
-        # code copied from schedule tests, for so little code it seems
-        # better than forcing the reader to switch all the time
-        params = {
-            "chore": self.chore,
-            "quantity": 1,
-            "days": 1,
-            "days_of_week": self.ALL_DAYS,
-            "start_date": self.DATE,
-            "end_date": self.DATE
-            }
-        params.update(kwargs)
-        return ScheduleRule.objects.create(**params)
-
-    def update_allocations(self, chores=None):
-        chores = chores or ChoreType.objects.filter(pk=self.chore.pk)
-        request = mock.Mock()
-        market.actions.update_allocations(self.modeladmin, request, chores)
-
-    def assert_only_message(self, text):
-        self.assert_messages([text])
-
-    def assert_messages(self, expected):
-        messages = []
-        for _a, (_mock, message), _dict in self.modeladmin.message_user.mock_calls:
-            messages.append(message)
-        self.assertEqual(len(expected), len(messages))
-        for text, message in zip(expected, messages):
-            self.assertIn(text, message)
-
 
     def test_first_time(self):
         self.rule()
@@ -97,6 +58,37 @@ class UpdateAllocationsTests(TestCase):
         self.assertEqual(1, self.chore.allocation_set.count())
         self.assertEqual(1, self.other_chore.allocation_set.count())
 
+    def rule(self, **kwargs):
+        # code copied from schedule tests, for so little code it seems
+        # better than forcing the reader to switch all the time
+        params = {
+            "chore": self.chore,
+            "quantity": 1,
+            "days": 1,
+            "days_of_week": self.ALL_DAYS,
+            "start_date": self.DATE,
+            "end_date": self.DATE
+        }
+        params.update(kwargs)
+        return ScheduleRule.objects.create(**params)
+
+    def update_allocations(self, chores=None):
+        chores = chores or ChoreType.objects.filter(pk=self.chore.pk)
+        request = mock.Mock()
+        market.actions.update_allocations(self.modeladmin, request, chores)
+
+    def assert_only_message(self, text):
+        self.assert_messages([text])
+
+    def assert_messages(self, expected):
+        messages = []
+        calls = self.modeladmin.message_user.mock_calls
+        for _a, (_mock, message), _dict in calls:
+            messages.append(message)
+        self.assertEqual(len(expected), len(messages))
+        for text, message in zip(expected, messages):
+            self.assertIn(text, message)
+
 
 # warning: complicated tests ahead, read slowly and carefully
 class UpdateAllocationsTransactionTest(TransactionTestCase):
@@ -110,6 +102,7 @@ class UpdateAllocationsTransactionTest(TransactionTestCase):
     setUp = UpdateAllocationsTests.__dict__["setUp"]
     update_allocations = UpdateAllocationsTests.__dict__["update_allocations"]
     assert_messages = UpdateAllocationsTests.__dict__["assert_messages"]
+    # pylint: disable=E1101
 
     @mock.patch("schedule.models.ScheduleRule.calculate_allocations")
     def test_nothing_commited_on_error(self, calculate_allocations):
@@ -150,7 +143,6 @@ class UpdateAllocationsTransactionTest(TransactionTestCase):
         self.assertEqual(1, self.other_chore.allocation_set.count())
         self.assert_messages(["failed", "updated"])
 
-
     def mock_allocation_plan(self, pairs):
         """
         Helps with mocking `calculate_allocations()`'s return value.
@@ -164,8 +156,8 @@ class UpdateAllocationsTransactionTest(TransactionTestCase):
         items being mocked pairs in order received.
 
         Example:
-
-            >> mock_plan, legal, illegal = self.mock_allocation_plan([((self.DATE, 3), 1), ((self.DATE, 3), -1)])
+            >> mock_plan, legal, illegal = self.mock_allocation_plan(
+            .. [((self.DATE, 3), 1), ((self.DATE, 3), -1)])
             >> calculate_allocations.return_value = mock_plan
             >> self.update_allocations()
             >> legal.__iter__.assert_called_with()
@@ -181,3 +173,5 @@ class UpdateAllocationsTransactionTest(TransactionTestCase):
         mock_dict.iteritems = mock.Mock(return_value=mock_pairs)
 
         return ([mock_dict] + mock_pairs)
+
+    # pylint: enable=E1101

@@ -1,4 +1,4 @@
-from dateutil.rrule import rrule, weekday
+from dateutil.rrule import weekday
 
 from django.core import exceptions, validators
 from django.db import models
@@ -94,8 +94,8 @@ class DaysOfWeekField(models.Field):
     def formfield(self, **kwargs):
         defaults = {
             "form_class": forms.ChoiceField,
-            }
+        }
         defaults.update(kwargs)
         return super(DaysOfWeekField, self).formfield(**defaults)
 
-add_introspection_rules([], ["^schedule\.fields\.DaysOfWeekField"])
+add_introspection_rules([], [r"^schedule\.fields\.DaysOfWeekField"])

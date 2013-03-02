@@ -2,3 +2,4 @@
 *~
 burden.db
 *.mo
+.pyflymakerc*

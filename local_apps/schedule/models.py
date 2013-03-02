@@ -1,10 +1,11 @@
-from dateutil.rrule import *
+from dateutil.rrule import rrule, WEEKLY
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from design.models import ChoreType
 from schedule.fields import DaysOfWeekField
+
 
 class ScheduleRule(models.Model):
     """
@@ -39,14 +40,14 @@ class ScheduleRule(models.Model):
     # TODO: save_rules_revision(), make calculate_allocations() action call it
     # TODO: Prevent editing of rules with rules_revision
 
-
     class Meta:
         verbose_name = _('Schedule Rule')
         verbose_name_plural = _('Schedule Rules')
 
     def __unicode__(self):
         return u"%d X %d days of %s [%s - %s]" % (
-            self.quantity, self.days, self.chore, self.start_date, self.end_date)
+            self.quantity, self.days, self.chore,
+            self.start_date, self.end_date)
 
     # TODO: move to manager?
     @classmethod
@@ -76,13 +77,18 @@ class ScheduleRule(models.Model):
             else:
                 raise ValueError(_('Allocations above 2 weeks not supported'))
 
-            for date in rrule(WEEKLY, dtstart=rule.start_date, until=rule.end_date,
-                              byweekday=rule.days_of_week, interval=interval):
+            for date in rrule(WEEKLY,
+                              dtstart=rule.start_date,
+                              until=rule.end_date,
+                              byweekday=rule.days_of_week,
+                              interval=interval):
                 # datetime object to date object
                 date = date.date()
-                allocations[date, rule.days] = allocations.get((date, rule.days), 0) + rule.quantity
+                allocations[date, rule.days] = \
+                    allocations.get((date, rule.days), 0) + rule.quantity
 
-        for (date, days), quantity in allocations.iteritems():
+        for (date, _days), quantity in allocations.iteritems():
             if quantity < 0:
-                raise ValueError(_('Negative quantity of %(chore)s at %(date)s') % locals())
+                raise ValueError(
+                    _('Negative quantity of %(chore)s at %(date)s') % locals())
         return allocations

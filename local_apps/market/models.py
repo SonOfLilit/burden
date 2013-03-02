@@ -21,7 +21,8 @@ class Allocation(models.Model):
         verbose_name_plural = _("Allocations")
 
     def __unicode__(self):
-        return u"%d days of %s starting %s" % (self.days, self.chore, self.date)
+        return u"%d days of %s starting %s" % (
+            self.days, self.chore, self.date)
 
 
 class Assignment(models.Model):
@@ -50,7 +51,7 @@ class Assignment(models.Model):
     party nor the taking party. This is good and by design and is
     meant to protect the sanity of the system, specifically the
     principles stating:
-    
+
     * A `Body` can't affect an `Allocation` that doesn't belong to it
       (even if its child is the current performer)
 
@@ -77,19 +78,27 @@ class Assignment(models.Model):
     def __unicode__(self):
         maybe_inactive = "" if self.is_active else "NOT ACTIVE "
         return u"%s: %s%s >-%s-> %s" % (
-            self.timestamp, maybe_inactive, self.old_performer, self.allocation, self.new_performer)
+            self.transaction.timestamp,  # pylint: disable-msg=E1101
+            maybe_inactive,
+            self.old_performer,
+            self.allocation,
+            self.new_performer)
 
 
 class Transaction(models.Model):
-    """
-    Represents a bunch of `Assignment`s done together, e.g. a trade or
+    """Represents a bunch of `Assignment`s done together, e.g. a trade or
     an organization assigning `Allocation`s to sub-organizations.
 
-    Every `Assignment` is part of a `Transaction` (though perhaps a trivial one).
+    Every `Assignment` is part of a `Transaction` (though perhaps a
+    trivial one).
     """
     timestamp = models.DateField(auto_now_add=True)
-    # if there were authorities who authorized this transaction, they are recorded here
+    # if there were authorities who authorized this transaction, they
+    # are recorded here
     signers = models.ManyToManyField(User)
-    # TODO: Do we need to enumerate participating parties? What if one is assigning to many?
-    # TODO: Do we need is_trade? Should it be only here for normalization despite being needed so often?
-    # Maybe here it should be a property reading from assignments[0]?
+    # TODO: Do we need to enumerate participating parties? What if one
+    # is assigning to many?
+
+    # TODO: Do we need is_trade? Should it be only here for
+    # normalization despite being needed so often?  Maybe here it
+    # should be a property reading from assignments[0]?

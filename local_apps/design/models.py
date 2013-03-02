@@ -14,8 +14,10 @@ class ChoreType(models.Model):
     them with each other.
     """
     name = models.CharField(max_length=100)
-    traits_required = models.ManyToManyField(Trait, related_name="chores_requiring_trait", blank=True)
-    traits_forbidden = models.ManyToManyField(Trait, related_name="chores_forbidding_trait", blank=True)
+    traits_required = models.ManyToManyField(
+        Trait, related_name="chores_requiring_trait", blank=True)
+    traits_forbidden = models.ManyToManyField(
+        Trait, related_name="chores_forbidding_trait", blank=True)
     # Creator of `ChoreType` must be a manager in `owners`. `owners`
     # receives every allocation of this ChoreType and is responsible
     # for distributing it between its `Worker`s.
